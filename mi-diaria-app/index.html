@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2fb21c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mi Diaria">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Mi Diaria</title>
+<style>
+
+:root{--bg:#f3f8ef;--card:#fff;--tx:#17301a;--mu:#5f7a62;--g:#2fb21c;--gd:#1a8a0e;--ln:#dbe8d6;--er:#c0392b;--hd:#e6f4df}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1a10;--card:#172618;--tx:#e8f4e5;--mu:#93ad92;--g:#3fcf2a;--gd:#2fb21c;--ln:#2a402b;--er:#ff7b6b;--hd:#1f3320}}
+:root[data-theme="dark"]{--bg:#0f1a10;--card:#172618;--tx:#e8f4e5;--mu:#93ad92;--g:#3fcf2a;--gd:#2fb21c;--ln:#2a402b;--er:#ff7b6b;--hd:#1f3320}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding-bottom:76px}
+main{max-width:640px;margin:0 auto;padding:14px}
+h1{font-size:20px;margin:6px 0 2px}h2{font-size:17px;margin:0 0 10px}
+.sub{color:var(--mu);font-size:13px;margin-bottom:12px}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:14px;margin-bottom:12px}
+label{display:block;font-size:13px;color:var(--mu);margin:8px 0 4px}
+input{width:100%;font:inherit;color:var(--tx);background:var(--bg);border:1.5px solid var(--ln);border-radius:10px;padding:11px 12px}
+input:focus{outline:none;border-color:var(--g)}
+.big{font-size:26px;font-weight:700;text-align:center;letter-spacing:2px}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.chips{display:flex;gap:8px;margin:8px 0}
+.chip{flex:1;padding:9px 0;border-radius:999px;border:1.5px solid var(--g);background:none;color:var(--gd);font:inherit;font-weight:600;cursor:pointer}
+.btn{width:100%;padding:13px;border:0;border-radius:12px;background:var(--g);color:#fff;font:inherit;font-weight:700;font-size:17px;cursor:pointer}
+.btn.s{width:auto;padding:8px 12px;font-size:14px}.btn.o{background:none;border:1.5px solid var(--ln);color:var(--tx)}
+.btn.d{background:none;border:1.5px solid var(--er);color:var(--er)}
+.hint{font-size:13px;color:var(--mu);min-height:18px;margin-top:6px}
+table{width:100%;border-collapse:collapse}
+th{background:var(--hd);text-align:left;font-size:13px;padding:10px 8px}
+td{padding:6px 8px;border-bottom:1px solid var(--ln)}
+td.n{font-weight:700;font-size:18px}
+th:nth-child(n+2),td:nth-child(n+2){text-align:right}
+tfoot td{font-weight:700;background:var(--hd);border:0}
+.q{background:none;border:1px dashed var(--ln);border-radius:8px;padding:6px 10px;font:inherit;color:var(--tx);cursor:pointer}
+td input{padding:6px 8px;text-align:right;width:130px}
+.x{background:none;border:0;color:var(--mu);font-size:18px;cursor:pointer}
+.wrap{overflow-x:auto}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--ln);display:flex;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;padding:12px 0 10px;border:0;background:none;color:var(--mu);font:inherit;font-size:12px;cursor:pointer}
+nav button b{display:block;font-size:20px}nav button.on{color:var(--gd);font-weight:700}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;transition:.2s;pointer-events:none;max-width:90%;text-align:center}
+.toast.show{opacity:1}.toast.er{background:var(--er);color:#fff}
+.log{font-size:14px;color:var(--mu);margin:0;padding-left:18px}
+.tc.cur{border-color:var(--g);border-width:2px}.meta{font-size:12px;color:var(--mu);margin:6px 0}
+section{display:none}section.on{display:block}
+
+.chips{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0}
+.chip{padding:10px 0;font-size:14px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.log{list-style:none;padding:0;margin:0}
+.log li{display:flex;justify-content:space-between;align-items:center;padding:8px 2px;border-bottom:1px solid var(--ln);font-size:15px;color:var(--tx)}
+.log li:last-child{border-bottom:0}
+.tm{font-size:12px;color:var(--mu);font-weight:400}
+.log.small{max-height:190px;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+#logcard{cursor:pointer}
+nav{z-index:10}
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));background:rgba(0,0,0,.35);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.modal.on{display:flex}
+.panel{background:var(--card);border:1px solid var(--ln);border-radius:18px;width:100%;max-width:560px;height:100%;max-height:720px;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.35);padding:14px 16px}
+.ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.ph h2{margin:0}.ph .x{font-size:22px;padding:4px 8px}
+.log.full{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.log.full li{font-size:17px;padding:10px 2px}
+.toast{z-index:200}
+</style></head><body>
+<main>
+<section id="v-vender" class="on">
+ <h1>Vender número</h1><div class="sub" id="tn1"></div>
+ <div class="card">
+  <label>Número</label><input id="num" class="big" inputmode="numeric" autocomplete="off" placeholder="00">
+  <label>Cantidad ($)</label><input id="amt" inputmode="decimal" autocomplete="off" placeholder="1">
+  <div class="chips">
+    <button class="chip" data-a="0.25">$0.25</button>
+    <button class="chip" data-a="0.50">$0.50</button>
+    <button class="chip" data-a="0.75">$0.75</button>
+    <button class="chip" data-a="1.25">$1.25</button>
+    <button class="chip" data-a="1.50">$1.50</button>
+    <button class="chip" data-a="1.75">$1.75</button>
+    <button class="chip" data-a="2.25">$2.25</button>
+    <button class="chip" data-a="2.50">$2.50</button>
+    <button class="chip" data-a="2.75">$2.75</button>
+    <button class="chip" data-a="3.25">$3.25</button>
+    <button class="chip" data-a="3.50">$3.50</button>
+    <button class="chip" data-a="3.75">$3.75</button>
+  </div>
+  <div class="hint" id="hint"></div>
+  <button class="btn" id="go">Subir</button>
+ </div>
+ <div class="card" id="logcard"><h2>Últimas ventas <span class="tm" id="logn"></span></h2><ul class="log small" id="log"></ul><div class="hint">Desliza para ver más · toca para ampliar</div></div>
+</section>
+<section id="v-tabla">
+ <div class="top"><div><h1>Tabla</h1><div class="sub" id="tn2"></div></div><button class="btn s o" id="cp">📋 Copiar</button></div>
+ <div class="card wrap"><table><thead><tr><th>Número</th><th>Cantidad $</th><th id="thv"></th><th></th></tr></thead><tbody id="tb"></tbody><tfoot id="tf"></tfoot></table>
+ <div class="hint">Toca una cantidad para editarla. Aparece como fórmula (ej. =1+0.25) y puedes cambiarla como en Excel.</div></div>
+ <button class="btn" id="xl">📥 Exportar a Excel</button>
+</section>
+<section id="v-tablas">
+ <h1>Mis tablas</h1><div class="sub">Cada tabla guarda su fecha y hora. Puedes cambiarlas.</div>
+ <button class="btn" id="nueva" style="margin-bottom:10px">+ Nueva tabla</button><button class="btn o" id="xlall" style="margin-bottom:12px">📥 Exportar todas a Excel</button><div id="lista"></div>
+</section>
+<section id="v-ajustes">
+ <h1>Ajustes</h1><div class="sub">Se aplican a todas las tablas.</div>
+ <div class="card">
+  <label>Premio: se multiplica la cantidad por</label><input id="c-mult" inputmode="decimal">
+  <label>Límite por número ($)</label><input id="c-limit" inputmode="decimal">
+  <label>Dígitos del número</label><input id="c-digits" inputmode="numeric">
+  <div class="hint">Los cambios se guardan al escribir.</div>
+ </div>
+</section>
+</main>
+<nav id="nav"><button data-v="vender" class="on"><b>➕</b>Vender</button><button data-v="tabla"><b>📋</b>Tabla</button><button data-v="tablas"><b>🗂️</b>Tablas</button><button data-v="ajustes"><b>⚙️</b>Ajustes</button></nav>
+<div class="modal" id="modal"><div class="panel" role="dialog" aria-label="Todas las ventas">
+ <div class="ph"><div><h2>Todas las ventas</h2><div class="tm" id="msum"></div></div><button class="x" id="mx" aria-label="Cerrar">✕</button></div>
+ <ul class="log full" id="mlog"></ul>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const $=id=>document.getElementById(id),KEY='diaria_v1';let S;
+const pad=n=>String(n).padStart(2,'0');
+const nowStr=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes())};
+const fmtDate=s=>{const d=new Date(s);return isNaN(d)?'—':d.toLocaleString('es',{dateStyle:'medium',timeStyle:'short'})};
+const money=c=>'$'+(c/100).toFixed(2);
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function newTable(){const t={id:Date.now()+Math.random(),name:'Diaria '+new Date().toLocaleDateString('es',{day:'numeric',month:'short'}),date:nowStr(),mod:Date.now(),rows:{},log:[]};S.tables.unshift(t);S.cur=t.id;return t}
+function load(){try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+ if(!S||!Array.isArray(S.tables))S={cfg:{mult:80,limit:4,digits:2},tables:[],cur:null};
+ if(!S.tables.length)newTable();if(!S.tables.find(t=>t.id==S.cur))S.cur=S.tables[0].id}
+const cur=()=>S.tables.find(t=>t.id==S.cur);
+const touch=t=>{t.mod=Date.now();save()};
+function parse(f){f=String(f).replace(/^\s*=/,'').replace(/,/g,'.').replace(/\s/g,'');
+ if(!/^(\d+\.?\d*|\.\d+)(\+(\d+\.?\d*|\.\d+))*$/.test(f))return null;
+ const p=f.split('+').map(Number);return{f:p.join('+'),c:p.reduce((a,x)=>a+Math.round(x*100),0)}}
+const total=t=>Object.values(t.rows).reduce((a,f)=>a+parse(f).c,0);
+let tt;function toast(m,er){const e=$('toast');e.textContent=m;e.className='toast show'+(er?' er':'');clearTimeout(tt);tt=setTimeout(()=>e.className='toast',2600)}
+function hint(){const t=cur(),d=S.cfg.digits,n=$('num').value.trim();let h='Límite por número: '+money(S.cfg.limit*100);
+ if(/^\d+$/.test(n)&&n.length<=d){const k=n.padStart(d,'0'),o=t.rows[k]?parse(t.rows[k]).c:0;h=(o?`El ${k} ya tiene ${money(o)}. `:`El ${k} está libre. `)+`Puede comprar hasta ${money(Math.max(0,S.cfg.limit*100-o))} más.`}
+ $('hint').textContent=h}
+function add(){const t=cur(),d=S.cfg.digits;let n=$('num').value.trim();
+ if(!/^\d+$/.test(n)||n.length>d)return toast(`Escribe un número de hasta ${d} dígitos`,1);n=n.padStart(d,'0');
+ const p=parse($('amt').value);if(!p||p.c<=0)return toast('Cantidad inválida',1);
+ const o=t.rows[n]?parse(t.rows[n]).c:0,lim=Math.round(S.cfg.limit*100);
+ if(o+p.c>lim)return toast(`El ${n} solo admite ${money(Math.max(0,lim-o))} más`,1);
+ t.rows[n]=t.rows[n]?t.rows[n]+'+'+p.f:p.f;t.log.unshift({n,c:p.c,t:Date.now()});touch(t);
+ toast(`✔ ${n} → ${money(o+p.c)}`);$('num').value='';$('amt').value='';$('num').focus();render()}
+function renderTabla(){const t=cur(),m=S.cfg.mult;$('thv').textContent='Vale (×'+m+')';
+ const ks=Object.keys(t.rows).sort((a,b)=>parseInt(a,10)-parseInt(b,10));
+ $('tb').innerHTML=ks.length?ks.map(k=>{const c=parse(t.rows[k]).c;return`<tr><td class="n">${k}</td><td><button class="q" data-e="${k}">${money(c)}</button></td><td>${money(Math.round(c*m))}</td><td><button class="x" data-del="${k}" title="Quitar">×</button></td></tr>`}).join(''):'<tr><td colspan="4" class="hint">Aún no hay números.</td></tr>';
+ $('tf').innerHTML=`<tr><td>Total</td><td>${money(total(t))}</td><td colspan="2">${ks.length} números<br>${ventas(t)} ventas</td></tr>`}
+function renderLog(){const t=cur(),L=t.log,tot=L.reduce((a,l)=>a+l.c,0);
+ const li=l=>`<li><span><b>${l.n}</b> — ${money(l.c)}</span><span class="tm">${l.t?new Date(l.t).toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}):''}</span></li>`;
+ const h=L.length?L.map(li).join(''):'<li>Todavía no has vendido nada.</li>';
+ $('log').innerHTML=h;$('mlog').innerHTML=h;
+ $('logn').textContent=L.length?'('+L.length+')':'';
+ $('msum').textContent=L.length?L.length+' ventas · '+money(tot):''}
+function renderLista(){$('lista').innerHTML=S.tables.map(t=>`<div class="card tc ${t.id==S.cur?'cur':''}" data-id="${t.id}"><input data-f="name" value="${esc(t.name)}"><label>Fecha y hora de la tabla</label><input type="datetime-local" data-f="date" value="${t.date}"><div class="meta">Última modificación: ${fmtDate(t.mod)} · Total ${money(total(t))}</div><div class="row"><button class="btn s" data-open="1">${t.id==S.cur?'Abierta ✔':'Abrir'}</button><button class="btn s d" data-rm="1">Eliminar</button></div></div>`).join('')}
+function render(){const t=cur();$('tn1').textContent=$('tn2').textContent=t.name+' · '+fmtDate(t.date);renderTabla();renderLog();renderLista();hint()}
+function show(v){document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id=='v-'+v));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v==v));if(v=='tabla')renderTabla();if(v=='tablas')renderLista()}
+$('nav').onclick=e=>{const b=e.target.closest('button');if(b)show(b.dataset.v)};
+$('go').onclick=add;$('num').oninput=hint;
+$('amt').onkeydown=$('num').onkeydown=e=>{if(e.key=='Enter')add()};
+document.querySelector('.chips').onclick=e=>{const b=e.target.closest('.chip');if(b){$('amt').value=b.dataset.a;if($('num').value)add();else $('num').focus()}};
+$('tb').onclick=e=>{const t=cur(),q=e.target.closest('[data-e]'),x=e.target.closest('[data-del]');
+ if(x){delete t.rows[x.dataset.del];touch(t);return render()}
+ if(q){const k=q.dataset.e,i=document.createElement('input');i.value='='+t.rows[k];q.replaceWith(i);i.focus();i.select();let done=0;
+  const fin=ok=>{if(done)return;done=1;if(ok){const p=parse(i.value);if(!p||p.c<=0)toast('Fórmula inválida (ej. =1+0.25)',1);else if(p.c>Math.round(S.cfg.limit*100))toast('Pasa el límite de '+money(S.cfg.limit*100),1);else{t.rows[k]=p.f;touch(t)}}render()};
+  i.onkeydown=ev=>{if(ev.key=='Enter')fin(1);if(ev.key=='Escape')fin(0)};i.onblur=()=>fin(1)}};
+
+function sheetFor(t){const m=S.cfg.mult,ks=Object.keys(t.rows).sort((a,b)=>parseInt(a,10)-parseInt(b,10)),z='$0.00';
+ const rows=[['Número','Cantidad $','Vale (×'+m+')']];
+ ks.forEach((k,i)=>{const p=parse(t.rows[k]),r=i+2;rows.push([{t:'s',v:k},{t:'n',v:p.c/100,f:p.f,z},{t:'n',v:Math.round(p.c*m)/100,f:'B'+r+'*'+m,z}])});
+ const n=ks.length;rows.push([{t:'s',v:'Total'},n?{t:'n',v:total(t)/100,f:'SUM(B2:B'+(n+1)+')',z}:{t:'n',v:0,z},'']);
+ const ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=[{wch:12},{wch:14},{wch:14}];return ws}
+async function exportX(all){if(!window.XLSX)return toast('No cargó el módulo de Excel. Revisa tu internet.',1);
+ const list=all?S.tables:[cur()],wb=XLSX.utils.book_new(),used={};
+ list.forEach(t=>{let nm=(t.name||'Tabla').replace(/[\\\/?*\[\]:]/g,' ').trim().slice(0,28)||'Tabla';let b=nm,i=2;while(used[nm.toLowerCase()])nm=b+' '+i++;used[nm.toLowerCase()]=1;XLSX.utils.book_append_sheet(wb,sheetFor(t),nm)});
+ const buf=XLSX.write(wb,{type:'array',bookType:'xlsx'}),fn=(all?'Diarias':(list[0].name||'Diaria')).replace(/[\\\/:*?"<>|]/g,' ').trim()+'.xlsx';
+ try{const dl=window.claude?await claude.use('downloads'):null;
+  if(dl){await dl.save({filename:fn,data:buf});toast('✔ Excel listo')}
+  else{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));a.download=fn;a.click();toast('✔ Excel descargado')}
+ }catch(e){if(e&&e.code=='declined')return;toast('No se pudo guardar el Excel',1)}}
+const ventas=t=>Object.values(t.rows).reduce((a,f)=>a+String(f).split('+').length,0);
+function copyTable(){const t=cur(),ks=Object.keys(t.rows).sort((a,b)=>parseInt(a,10)-parseInt(b,10));
+ if(!ks.length)return toast('No hay nada que copiar',1);
+ const txt=['Número\tCantidad $',...ks.map(k=>k+'\t'+money(parse(t.rows[k]).c)),'Total\t'+money(total(t))].join('\n');
+ const ok=()=>toast('✔ Tabla copiada');
+ const fb=()=>{const a=document.createElement('textarea');a.value=txt;a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();let r=false;try{r=document.execCommand('copy')}catch(e){}a.remove();r?ok():toast('No se pudo copiar',1)};
+ if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(txt).then(ok,fb);else fb()}
+$('cp').onclick=copyTable;
+const openLog=()=>{$('modal').classList.add('on');document.body.style.overflow='hidden'},closeLog=()=>{$('modal').classList.remove('on');document.body.style.overflow=''};
+$('logcard').onclick=openLog;$('mx').onclick=closeLog;$('modal').onclick=e=>{if(e.target===$('modal'))closeLog()};
+addEventListener('keydown',e=>{if(e.key=='Escape')closeLog()});
+$('xl').onclick=()=>exportX(false);$('xlall').onclick=()=>exportX(true);
+$('nueva').onclick=()=>{newTable();save();render();show('vender');toast('Tabla nueva creada')};
+$('lista').onclick=e=>{const c=e.target.closest('.tc');if(!c)return;const id=c.dataset.id;
+ if(e.target.dataset.open){S.cur=S.tables.find(t=>t.id==id).id;save();render();show('vender')}
+ if(e.target.dataset.rm){const b=e.target;if(b.dataset.s){S.tables=S.tables.filter(t=>t.id!=id);if(!S.tables.length)newTable();if(!S.tables.find(t=>t.id==S.cur))S.cur=S.tables[0].id;save();render()}else{b.dataset.s=1;b.textContent='¿Seguro?';setTimeout(()=>{b.dataset.s='';b.textContent='Eliminar'},3000)}}};
+$('lista').onchange=e=>{const c=e.target.closest('.tc'),f=e.target.dataset.f;if(!c||!f)return;const t=S.tables.find(t=>t.id==c.dataset.id);
+ if(f=='date'&&!e.target.value)return;t[f]=e.target.value||t.name;touch(t);render()};
+</script>
+<script>load();['mult','limit','digits'].forEach(k=>{const e=$('c-'+k);e.value=S.cfg[k];e.oninput=()=>{const v=parseFloat(e.value.replace(',','.'));if(v>0){S.cfg[k]=k=='digits'?Math.min(6,Math.round(v)):v;save();render()}}});
+render()</script>
+<script>if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
+</body></html>
